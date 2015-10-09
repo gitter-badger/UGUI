@@ -17,6 +17,7 @@
 //**B06**. [Create a folder](#b06-create-a-folder)  
 //**B07**. [Delete a file](#b07-delete-a-file)  
 //**B08**. [Delete a folder](#b08-delete-a-folder)  
+//**B09**. [Get a file's size](#b09-get-a-file-s-size)  
 //
 //**C00. [CLI Command Processing](#c00-cli-command-processing)**  
 //**C01**. [Clicking Submit](#c01-clicking-submit)  
@@ -718,6 +719,79 @@ function deleteAFolder(filePath, callback) {
             callback();
         }
     });
+}
+
+
+
+
+
+
+
+//* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+//### B09. Get a file's size
+//
+//>Though UGUI doesn't currently use this functionality anywhere
+// within itself, we thought it would be nice to offer a quick
+// and easy way to file size of a file.
+//
+//>     ugui.helpers.getFileSize("C:/path/to/folder");
+
+//
+
+
+function fileSizer(filePath, userCallback) {
+    fs.stat(filePath, function(err, stats) {
+        //If there was a problem getting the file's metadata
+        if (err) {
+            console.info(º+"There was an error attempting to retrieve file size.", consoleNormal);
+            console.warn(º+err.message, consoleError);
+            return;
+        }
+            //Create an object with common file size conversions
+        var fileSize = {
+            "bytes": stats.size,
+            "kilobytes": stats.size / 1024.0,
+            "megabytes": stats.size / 1024000.0
+        };
+
+        //If a userCallback was passed in, run it with the fileSize object as an argument
+        if (userCallback) {
+            userCallback(fileSize);
+            return;
+        }
+        console.log(fileSize);
+        return fileSize;
+    });
+}
+
+function getFileSize(filePath, userCallback) {
+    //Validate that required argument is passed and is the correct types
+    // if (!filePath || typeof(filePath) !== "string") {
+    //     console.info(º+"Supply a path to the file you want the size of as " +
+    //         "the first argument to this function.", consoleNormal);
+    //     console.info(º+"File path must be passed as a string.", consoleNormal);
+    //     console.info(º+"Example:", consoleBold);
+    //     console.info(º+'ugui.helpers.getFileSize("C:/folder/pizza.jpg");', consoleCode);
+    //     return;
+    // //If a userCallback was passed in and it isn't a function
+    // } else if (userCallback && typeof(userCallback) !== "function") {
+    //     console.info(º+"Your userCallback must be passed as a function.", consoleNormal);
+    //     return;
+    // };
+
+    fileSizer(filePath, userCallback);
+
+
+        
+    // var stats = fs.statSync(filePath);
+
+    // var fileSize = {
+    //         "bytes": stats.size,
+    //         "kilobytes": stats.size / 1024.0,
+    //         "megabytes": stats.size / 1024000.0
+    // };
+
+    // return fileSize;
 }
 
 
@@ -2070,7 +2144,7 @@ function updateUGUIDevCommandLine() {
     //Get an array of all the commands being sent out
     var devCommandOutput = buildCommandArray(pickedExecutable);
     var devCommandOutputSpaces = [];
-console.log("devCommandOutput");
+
     for (var index = 0; index < devCommandOutput.length; index++) {
         if (devCommandOutput[index] !== "") {
             devCommandOutputSpaces.push(" " + devCommandOutput[index]);
@@ -2883,6 +2957,7 @@ window.ugui = {
         "deleteAFolder": deleteAFolder,
         "fillExecutableDropdowns": fillExecutableDropdowns,
         "findKeyValue": findKeyValue,
+        "getFileSize": getFileSize,
         "loadSettings": loadSettings,
         "openDefaultBrowser": openDefaultBrowser,
         "parseArgument": parseArgument,
